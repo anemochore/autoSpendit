@@ -4,8 +4,6 @@
 //'날짜'는 전월 마지막 날로.
 //'환급'에 체크
 
-//comments should be on seperate lines! 
-
 //read v from sheet
 
 (async () => {
