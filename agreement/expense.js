@@ -4,6 +4,8 @@
 //'날짜'는 전월 마지막 날로.
 //'환급'에 체크
 
+//comments should be on seperate lines! 
+
 //read v from sheet
 
 (async () => {
@@ -26,7 +28,9 @@
   }
 
   //상단 '추가' 버튼 클릭
-  el = await clickAndWait_(document.querySelector('div#application button.btn-icon'), 'div#expense-modal-split-left button');  //다음 기다릴 대상은 '미지정' 오른쪽 삼각형 버튼
+  //다음 기다릴 대상은 '미지정' 오른쪽 삼각형 버튼
+  el = await clickAndWait_(document.querySelector('div#application button.btn-icon'), 'div#expense-modal-split-left button');
+
 
   //'현금' 클릭
   el = await clickAndWait_(el, 'button+div>ul>div', el.parentNode);
@@ -48,7 +52,8 @@
   let thisMonth = parseInt(th.getAttribute('data-value'));
 
   let yearDiff = thisYear - v.year;
-  if(yearDiff > 1 || yearDiff < 0) {  //assert yearDiff == 1
+  //assert yearDiff == 1
+  if(yearDiff > 1 || yearDiff < 0) {
     alert('1년 전만 지원합니다!');
     return;
   }
@@ -105,14 +110,15 @@
         elToWaitOrSelector = elToClick;
       else if(typeof(elToWaitOrSelector) == 'string') {
         selector = elToWaitOrSelector;
-        elToWaitOrSelector = selectOn;  //if selected el is already present, not good-_-
+        //if selected el is already present, not good-_-
+        elToWaitOrSelector = selectOn;
       }
 
       let observer;
       if(!selector) {
         observer = new MutationObserver(m => {
           observer.disconnect();
-          console.log(elToWaitOrSelector, 'resolved');
+          //console.info(elToWaitOrSelector, 'resolved');
           resolve(elToWaitOrSelector);
         });
       }
@@ -120,14 +126,14 @@
         observer = new MutationObserver(m => {
           [...selectOn.querySelectorAll(selector)].forEach(el => {
             observer.disconnect();
-            console.log(el, 'resolved');
+            //console.info(el, 'resolved');
             resolve(el);
           });
         });
       }
       observer.observe(elToWaitOrSelector, {childList: true, subtree: true, attributes: true, characterData: true});
       if(elToClick) elToClick.click();
-      console.log(elToClick, 'clicked');
+      //console.info(elToClick, 'clicked');
     });
   }
 
