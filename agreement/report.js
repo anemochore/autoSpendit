@@ -114,7 +114,7 @@
       if(!selector) {
         observer = new MutationObserver(m => {
           observer.disconnect();
-          console.log(elToWaitOrSelector, 'resolved');
+          //console.log(elToWaitOrSelector, 'resolved');
           resolve(elToWaitOrSelector);
         });
       }
@@ -123,14 +123,14 @@
           let els = [...selectOn.querySelectorAll(selector)];
           if(els.length > 0) {
             observer.disconnect();
-            console.log(els[els.length-1], 'resolved');
+            //console.log(els[els.length-1], 'resolved');
             resolve(els[els.length-1]);
           }
         });
       }
       observer.observe(elToWaitOrSelector, {childList: true, subtree: true, attributes: true, characterData: true});
       if(elToClick) elToClick.click();
-      console.log(elToClick, 'clicked');
+      //console.log(elToClick, 'clicked');
     });
   }
 

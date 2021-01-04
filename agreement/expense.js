@@ -82,6 +82,10 @@
 
 
   //utils
+  function sleep(ms) {
+    return new Promise(r => setTimeout(r, ms));
+  }
+
   async function cInput_(strToFind, value, reactEHSelector = null, firstSelector = 'div', noSelectInput = false) {
     const elBase = getRightDivs_(strToFind);
     let el = [...elBase.querySelectorAll(firstSelector)].pop();
@@ -93,6 +97,8 @@
       el = await clickAndWait_(el, reactEHSelector, elBase);
       callReactEH_(el);
     }
+
+    await sleep(500);  //-_-...
   }
 
   function clickAndWait_(elToClick, elToWaitOrSelector = null, selectOn = document.documentElement) {
