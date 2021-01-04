@@ -30,7 +30,6 @@
   await cInput_(null, v.title, 'h3', 'input', elBase);
 
   //지급처(이름)...실지급금액
-  sleep(1000);
   await cInput_('지급처(이름)', v.sangho);
   await cInput_('주민등록번호', v.regNo);
   await cInput_('실지급금액', v.price);
@@ -61,7 +60,6 @@
 
   //은행명...계약서
   await cInput_('은행명', v.bank);
-  sleep(1000);  //와이??
   await cInput_('예금주', v.accountOwner);
   await cInput_('계좌번호', v.accountNo);
   await cInput_('전자결재문서', v.docNo);
@@ -72,7 +70,6 @@
 
   //지출 추가
   await clickAndWait_(getRightDivs_('지출 추가'), 'div.spendit-modal-container>div input[type="checkbox"]');
-  sleep(500);
   elBase = document.querySelector('div.spendit-modal-container>div');
   el = [...elBase.querySelectorAll('div')].filter(el => el.innerText.trim().split('\n') == v.sangho)[0]
   .parentNode.firstChild.querySelector('input');  //체크박스
@@ -83,7 +80,7 @@
 
   //제출
   el = await clickAndWait_(el, 'div.spendit-modal-container>div>footer button');
-  el.click();
+  //el.click();
 
 
   //utils
@@ -100,6 +97,7 @@
     callReactEH_(el);
 
     await clickAndWait_(null, 'div#alarm-pop');
+    await sleep(500);  //-_-...
   }
 
   function clickAndWait_(elToClick, elToWaitOrSelector = null, selectOn = document.documentElement) {
