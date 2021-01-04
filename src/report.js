@@ -68,6 +68,19 @@
   //내용
   await cInput_('내용', v.content, 'div', 'textarea');
 
+  //첨부 파일(pdf)
+  if(v._pdf) {
+    const response = await fetch(v._pdf);  //cors! todo+++
+    const blob = await response.blob();
+
+    const list = new DataTransfer();
+    const file = new File([blob], v._pdfName || '첨부.pdf');  //, metadata: {type: 'image/jpeg'}) or something
+    list.items.add(file);
+
+    el = document.querySelector('input#searchFile');
+    el.files = list.files;  //is it working??
+  }
+
   //지출 추가
   await clickAndWait_(getRightDivs_('지출 추가'), 'div.spendit-modal-container>div input[type="checkbox"]');
   elBase = document.querySelector('div.spendit-modal-container>div');
@@ -76,7 +89,6 @@
   el = await clickAndWait_(el, 'footer button', elBase);  //'1건의 지출 추가' 버튼 기다림
   el = await clickAndWait_(el, 'div[class*="actions"] button[class*="confirm"]');  //'추가' 버튼 기다림
   el = await clickAndWait_(el, 'div#report-view>div>ul>li>button');  //'제출' 버튼 기다림
-
 
   //제출
   el = await clickAndWait_(el, 'div.spendit-modal-container>div>footer button');
@@ -90,6 +102,7 @@
 
   async function cInput_(strToFind, value, firstSelector = 'div', tag = 'input', elBase = null) {
     if(!elBase) elBase = getRightDivs_(strToFind);
+    if(!elBase || !value) return;
 
     let el = elBase.querySelector(firstSelector);
     el = await clickAndWait_(el, tag, elBase);
@@ -163,7 +176,7 @@
 
     let divs = [...document.querySelectorAll(RIGHT_SEL)];
     if(selText)
-      divs = divs.filter(el => el.textContent == selText).pop().nextSibling;
+      divs = divs.filter(el => el.textContent == selText).pop()?.nextSibling;
 
     return divs;
   }

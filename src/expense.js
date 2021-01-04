@@ -60,7 +60,7 @@
   dayEls[v.day-1].click();
 
   //카테고리
-  await cInput_('카테고리', v.cat, 'div>input+ul>div:last-child');
+  await cInput_('카테고리', v.cat, 'div>input+ul>div:last-child', 'div', false, true);
   //sleep should not be here!
   await clickAndWait_(null, 'div:not(.spacer)+div:not(.spacer)+div.spacer+div:not(.spacer)+div:not(.spacer)', getRightDivs_()[0]);
 
@@ -82,7 +82,9 @@
 
 
   //utils
-  async function cInput_(strToFind, value, reactEHSelector = null, firstSelector = 'div', noSelectInput = false) {
+  async function cInput_(strToFind, value, reactEHSelector = null, firstSelector = 'div', noSelectInput = false, matchFirst = false) {
+    if(!value) return;
+
     const elBase = getRightDivs_(strToFind);
     let el = [...elBase.querySelectorAll(firstSelector)].pop();
     if(!noSelectInput)
@@ -90,13 +92,16 @@
     setReactElValue_(el, value);
 
     if(reactEHSelector) {
-      el = await clickAndWait_(el, reactEHSelector, elBase);
+      if(matchFirst) {
+        reactEHSelector = reactEHSelector.replace(/:last-child$/, '');  //assumed...
+        matchFirst = value;
+      }
+      el = await clickAndWait_(el, reactEHSelector, elBase, matchFirst);
       callReactEH_(el);
-      //callReactEH_(elBase.querySelector(reactEHSelector));
     }
   }
 
-  function clickAndWait_(elToClick, elToWaitOrSelector = null, selectOn = document.documentElement) {
+  function clickAndWait_(elToClick, elToWaitOrSelector = null, selectOn = document.documentElement, textToMatch = null) {
     return new Promise((resolve, reject) => {
       let selector;
       if(!elToWaitOrSelector)
@@ -119,6 +124,8 @@
         observer = new MutationObserver(m => {
           let els = [...selectOn.querySelectorAll(selector)];
           if(els.length > 0) {
+            if(textToMatch && els.filter(el => el.innerText.trim() == textToMatch).length > 0)
+              els = els.filter(el => el.innerText.trim() == textToMatch);
             observer.disconnect();
             //console.log(els[els.length-1], 'resolved');
             resolve(els[els.length-1]);
