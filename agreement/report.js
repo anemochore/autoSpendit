@@ -1,45 +1,13 @@
-//#정기인세 등
-//총액만. 현금으로.
-//'상호'는 IT2팀 정기인세
-//'날짜'는 전월 마지막 날로.
-//'환급'에 체크
-
-//보고서 생성
-//정기지출 폴리시
-//제목 입력: 정기인세(21년 1월)_팀(담당자) / [스벨트 앤 새퍼 인 액션] 번역계약금 지급(박수현)
-//내용 입력
-//지출 추가
-//구글 시트를 pdf로 저장해서 첨부
-//예산항목: ...
-//제출
+//read v from sheet
 
 (async () => {
-  const v = {
-    policy: '[HM]원천징수',
-    title: '[HM][스벨트 앤 새퍼 인 액션] 번역계약금 지급(박수현)',
-    sangho: '박수현',
-    regNo: '810314-1111111',
-    price: 500000,
-    year: 2020,
-    month: 11,  //0 is january
-    day: 28,
-    bank: '국민은행',
-    accountOwner: '박수현',
-    accountNo: '812702-04-125807',
-    docNo: '한빛-2702-0407',
-    agreementNo: 'HM202009011',
-    content: '계약 특이사항',
-  };
-
-
   //URL 확인
   if(document.location.origin+document.location.pathname != 'https://app.spendit.kr/reports') {
     alert('https://app.spendit.kr/reports 페이지에서 실행해주세요.');
     return;
   }
 
-  //globals, var to re-use
-  const RIGHT_SEL = 'div#report-document>div:last-child div';
+  //vars to re-use
   let el, elBase;
 
   //폴리시 확인
@@ -51,21 +19,21 @@
   }
 
   //상단 '추가' 버튼 클릭
-  el = await clickAndWait_(document.querySelector('div#application button.btn-icon'), 'div.swal2-container button.swal2-confirm');  //다음 기다릴 대상은 '생성' 버튼
+  el = await clickAndWait_(document.querySelector('div#application button.btn-icon'), 'div.swal2-container button.swal2-confirm');  //'생성' 기다림
 
-  //'생성' 클릭
+  //생성
   await clickAndWait_(el, 'div#report-document');
   await clickAndWait_(null, 'div#alarm-pop.disabled');  //알림 사라질 때까지 기다려야.
 
-  //'지급처(이름)' 클릭
+  //제목
+  elBase = document.querySelector('div#report-document header');
+  await cInput_(null, v.title, 'h3', 'input', elBase);
+  
+  //지급처(이름)...실지급금액
   await cInput_('지급처(이름)', v.sangho);
-
-  //주민등록번호
   await cInput_('주민등록번호', v.regNo);
-
-  //실지급금액
   await cInput_('실지급금액', v.price);
-/*
+
   //지급희망일
   elBase = getRightDivs_('지급희망일');
   el = elBase.querySelector('div>input');
@@ -89,40 +57,42 @@
 
   let dayEls = [...elBase.querySelectorAll('td[class="rdtDay"], td.rdtActive')];
   dayEls[v.day-1].click();
-*/
-  //은행명
+
+  //은행명...계약서
   await cInput_('은행명', v.bank);
-
-  //예금주
   await cInput_('예금주', v.accountOwner);
-
-  //계좌번호
   await cInput_('계좌번호', v.accountNo);
-
-  //전자결재문서
   await cInput_('전자결재문서', v.docNo);
-
-  //계약서
   await cInput_('계약서', v.agreementNo);
 
   //내용
-  //await cInput_('내용', v.content, null, 'div', 'textarea');
+  await cInput_('내용', v.content, 'div', 'textarea');
 
-  //document.querySelectorAll('ul.expense-button-bottom>li>button')[1].click();  //'저장'
+  //지출 추가
+  await clickAndWait_(getRightDivs_('지출 추가'), 'div.spendit-modal-container>div input[type="checkbox"]');
+  elBase = document.querySelector('div.spendit-modal-container>div');
+  el = [...elBase.querySelectorAll('div')].filter(el => el.innerText.trim().split('\n') == v.sangho)[0]
+  .parentNode.firstChild.querySelector('input');  //체크박스
+  el = await clickAndWait_(el, 'footer button', elBase);  //'1건의 지출 추가' 버튼 기다림
+  el = await clickAndWait_(el, 'div[class*="actions"] button[class*="confirm"]');  //'추가' 버튼 기다림
+  el = await clickAndWait_(el, 'div#report-view>div>ul>li>button');  //'제출' 버튼 기다림
+
+
+  //제출
+  el = await clickAndWait_(el, 'div.spendit-modal-container>div>footer button');
+  el.click();
 
 
   //utils
-  async function cInput_(strToFind, value, firstSelector = 'div', tag = 'input') {
-    const elBase = getRightDivs_(strToFind);
+  async function cInput_(strToFind, value, firstSelector = 'div', tag = 'input', elBase = null) {
+    if(!elBase) elBase = getRightDivs_(strToFind);
+
     let el = elBase.querySelector(firstSelector);
     el = await clickAndWait_(el, tag, elBase);
     setReactElValue_(el, value, tag);
-
     callReactEH_(el);
 
-    console.log(document.querySelector('div#alarm-pop.disabled'));
-    await clickAndWait_(elBase.previousSibling, document.querySelector('div#alarm-pop.disabled'));
-    await clickAndWait_(null, 'div#alarm-pop');  //not working. todo+++
+    await clickAndWait_(null, 'div#alarm-pop');
   }
 
   function clickAndWait_(elToClick, elToWaitOrSelector = null, selectOn = document.documentElement) {
@@ -145,11 +115,12 @@
       }
       else {
         observer = new MutationObserver(m => {
-          [...selectOn.querySelectorAll(selector)].forEach(el => {
+          let els = [...selectOn.querySelectorAll(selector)];
+          if(els.length > 0) {
             observer.disconnect();
-            console.log(el, 'resolved');
-            resolve(el);
-          });
+            console.log(els[els.length-1], 'resolved');
+            resolve(els[els.length-1]);
+          }
         });
       }
       observer.observe(elToWaitOrSelector, {childList: true, subtree: true, attributes: true, characterData: true});
@@ -162,24 +133,29 @@
     let nativeInputValueElSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
     if(tag == 'textarea')
       nativeInputValueElSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
-    const inputEvent = new Event(tag, {bubbles: true});
+    const inputEvent = new Event('input', {bubbles: true});  //use 'input' on textArea too.
 
     nativeInputValueElSetter.call(el, value);
-    el?._valueTracker.setValue(value);
     el.dispatchEvent(inputEvent);
   }
 
   function callReactEH_(el) {
     const reh = Object.keys(el).filter(el => el.startsWith('__reactEventHandlers$'))[0];
     if(el[reh].onMouseDown)
-      el[reh].onMouseDown.call();
+      el[reh].onMouseDown();
     else if(el[reh].onClick)
-      el[reh].onClick.call();
+      el[reh].onClick();
+    else if(el[reh].onBlur)
+      el[reh].onBlur();
+    //else if(el[reh].onKeyDown)
+      //el[reh].onKeyDown(new KeyboardEvent('keydown', {bubbles: true, keyCode: 13, key: 'Enter'}));
     else
       console.warn('no event handler found on', el);
   }
 
   function getRightDivs_(selText = null) {
+    const RIGHT_SEL = 'div#report-document>div:last-child div';
+
     let divs = [...document.querySelectorAll(RIGHT_SEL)];
     if(selText)
       divs = divs.filter(el => el.textContent == selText).pop().nextSibling;
