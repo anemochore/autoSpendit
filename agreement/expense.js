@@ -7,8 +7,7 @@
     return;
   }
 
-  //globals, var to re-use
-  const RIGHT_SEL = 'div.modal-desc div';
+  //var to re-use
   let el, elBase;
 
   //폴리시 확인
@@ -62,6 +61,7 @@
 
   //카테고리
   await cInput_('카테고리', v.cat, 'div>input+ul>div:last-child');
+  //sleep should not be here!
   await clickAndWait_(null, 'div:not(.spacer)+div:not(.spacer)+div.spacer+div:not(.spacer)+div:not(.spacer)', getRightDivs_()[0]);
 
   //도서명(카테고리 선택 후 나타남)
@@ -82,10 +82,6 @@
 
 
   //utils
-  function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms));
-  }
-
   async function cInput_(strToFind, value, reactEHSelector = null, firstSelector = 'div', noSelectInput = false) {
     const elBase = getRightDivs_(strToFind);
     let el = [...elBase.querySelectorAll(firstSelector)].pop();
@@ -96,9 +92,8 @@
     if(reactEHSelector) {
       el = await clickAndWait_(el, reactEHSelector, elBase);
       callReactEH_(el);
+      //callReactEH_(elBase.querySelector(reactEHSelector));
     }
-
-    await sleep(500);  //-_-...
   }
 
   function clickAndWait_(elToClick, elToWaitOrSelector = null, selectOn = document.documentElement) {
@@ -122,11 +117,12 @@
       }
       else {
         observer = new MutationObserver(m => {
-          [...selectOn.querySelectorAll(selector)].forEach(el => {
+          let els = [...selectOn.querySelectorAll(selector)];
+          if(els.length > 0) {
             observer.disconnect();
-            //console.info(el, 'resolved');
-            resolve(el);
-          });
+            //console.log(els[els.length-1], 'resolved');
+            resolve(els[els.length-1]);
+          }
         });
       }
       observer.observe(elToWaitOrSelector, {childList: true, subtree: true, attributes: true, characterData: true});
@@ -154,6 +150,8 @@
   }
 
   function getRightDivs_(selText = null) {
+    const RIGHT_SEL = 'div.modal-desc div';
+
     let divs = [...document.querySelectorAll(RIGHT_SEL)];
     if(selText)
       divs = divs.filter(el => el.textContent == selText)[0].parentNode;
