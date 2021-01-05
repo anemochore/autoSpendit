@@ -69,17 +69,20 @@
   await cInput_('내용', v.content, 'div', 'textarea');
 
   //첨부 파일(pdf)
+  /*
   if(v._pdf) {
-    const response = await fetch(v._pdf);  //cors! todo+++
+    const proxy = 'https://cors-anywhere.herokuapp.com/';  //to bypass cors
+    const response = await fetch(proxy + v._pdf);  //로그인 필요... not working!!!
     const blob = await response.blob();
 
+    const file = new File([blob], v._pdfName || '첨부.pdf', {type:'application/pdf'});
     const list = new DataTransfer();
-    const file = new File([blob], v._pdfName || '첨부.pdf');  //, metadata: {type: 'image/jpeg'}) or something
     list.items.add(file);
 
     el = document.querySelector('input#searchFile');
-    el.files = list.files;  //is it working??
+    el.files = list.files;  //is it working? no...
   }
+  */
 
   //지출 추가
   await clickAndWait_(getRightDivs_('지출 추가'), 'div.spendit-modal-container>div input[type="checkbox"]');
@@ -91,7 +94,8 @@
   el = await clickAndWait_(el, 'div#report-view>div>ul>li>button');  //'제출' 버튼 기다림
 
   //제출
-  el = await clickAndWait_(el, 'div.spendit-modal-container>div>footer button');
+  alert('수동으로 pdf 파일을 첨부하고 제출합니다.');
+  //el = await clickAndWait_(el, 'div.spendit-modal-container>div>footer button');
   //el.click();
 
 
@@ -171,12 +175,17 @@
       console.warn('no event handler found on', el);
   }
 
-  function getRightDivs_(selText = null) {
+  function getRightDivs_(selText) {
     const RIGHT_SEL = 'div#report-document>div:last-child div';
 
     let divs = [...document.querySelectorAll(RIGHT_SEL)];
-    if(selText)
-      divs = divs.filter(el => el.textContent == selText).pop()?.nextSibling;
+    divs = divs.filter(el => el.textContent == selText).pop();
+    
+    //cannot use ?. since https://javascript-minifier.com/ does not supports it :(
+    if(divs)
+      divs = divs.nextSibling;
+    else
+      divs = null;
 
     return divs;
   }

@@ -62,7 +62,10 @@
   //카테고리
   await cInput_('카테고리', v.cat, 'div>input+ul>div:last-child', 'div', false, true);
   //sleep should not be here!
-  await clickAndWait_(null, 'div:not(.spacer)+div:not(.spacer)+div.spacer+div:not(.spacer)+div:not(.spacer)', getRightDivs_()[0]);
+
+  //도서명이 없다면 기다리면 안 됨...
+  if(v.title)
+    await clickAndWait_(null, 'div:not(.spacer)+div:not(.spacer)+div.spacer+div:not(.spacer)+div:not(.spacer)', getRightDivs_()[0]);
 
   //도서명(카테고리 선택 후 나타남)
   await cInput_('도서명', v.title, 'div>input+ul>div:last-child');
@@ -116,7 +119,7 @@
       if(!selector) {
         observer = new MutationObserver(m => {
           observer.disconnect();
-          //console.info(elToWaitOrSelector, 'resolved');
+          console.info(elToWaitOrSelector, 'resolved');
           resolve(elToWaitOrSelector);
         });
       }
@@ -127,14 +130,14 @@
             if(textToMatch && els.filter(el => el.innerText.trim() == textToMatch).length > 0)
               els = els.filter(el => el.innerText.trim() == textToMatch);
             observer.disconnect();
-            //console.log(els[els.length-1], 'resolved');
+            console.log(els[els.length-1], 'resolved');
             resolve(els[els.length-1]);
           }
         });
       }
       observer.observe(elToWaitOrSelector, {childList: true, subtree: true, attributes: true, characterData: true});
       if(elToClick) elToClick.click();
-      //console.info(elToClick, 'clicked');
+      console.info(elToClick, 'clicked');
     });
   }
 
