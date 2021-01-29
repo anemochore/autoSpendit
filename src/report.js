@@ -19,7 +19,7 @@
   }
 
   //상단 '추가' 버튼 클릭
-  el = await clickAndWait_(document.querySelector('div#application button.btn-icon'), 'div.swal2-container button.swal2-confirm');  //'생성' 기다림
+  el = await clickAndWait_(document.querySelector('div#application div.button-group>button'), 'div.swal2-container button.swal2-confirm');  //'생성' 기다림
 
   //생성
   await clickAndWait_(el, 'div#report-document');
@@ -95,6 +95,8 @@
 
   //제출
   alert('수동으로 pdf 파일을 첨부하고 제출합니다.');
+  document.querySelector('div.add-file-field').scrollIntoView();
+
   //el = await clickAndWait_(el, 'div.spendit-modal-container>div>footer button');
   //el.click();
 

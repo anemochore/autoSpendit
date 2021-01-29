@@ -20,7 +20,7 @@
 
   //상단 '추가' 버튼 클릭
   //다음 기다릴 대상은 '미지정' 오른쪽 삼각형 버튼
-  el = await clickAndWait_(document.querySelector('div#application button.btn-icon'), 'div#expense-modal-split-left button');
+  el = await clickAndWait_(document.querySelector('div#application div.button-group>button'), 'div#expense-modal-split-left button');
 
 
   //'현금' 클릭
@@ -43,8 +43,7 @@
   let thisMonth = parseInt(th.getAttribute('data-value'));
 
   let yearDiff = thisYear - v.year;
-  //assert yearDiff == 1
-  if(yearDiff > 1 || yearDiff < 0) {
+  if(yearDiff > 1 || yearDiff < 0) {  //assert yearDiff == 1
     alert('1년 전만 지원합니다!');
     return;
   }

@@ -1,20 +1,34 @@
+//use 'hey' when using in console
+
 (async () => {
   const urlParams = new URLSearchParams(window.location.search);
   let js = urlParams.get('js');
 
-  //const proxy = 'https://cors-anywhere.herokuapp.com/';  //to bypass cors
-  const response = await fetch(js);
-  let txt = await response.text();
+  //deprecated: to bypass cors
+  //const proxy = 'https://cors-anywhere.herokuapp.com/';  
+
+  let txt;
+  if(!js) txt = hey;
+  else {
+    const response = await fetch(js);
+    txt = await response.text();
+  }
 
   txt = txt
-  .replace(/(^| +)\/\/.*/gm, '')                //주석 삭제
-  .split('\n').map(line => line.trim())         //행별로 공백 삭제
-  .filter(line => line).join(' ')               //빈 행 삭제
-  .replace(/</g, '&lt;').replace(/>/g, '&lt;'); //<> 이스케이프
+  .replace(/(^| +)\/\/.*/gm, '')          //주석 삭제
+  .split('\n').map(line => line.trim())   //행별로 공백 삭제
+  .filter(line => line).join(' ')         //빈 행 삭제
+  .replace(/</g, '&lt;')                  //<> 이스케이프(여는 태그만 해도 됨)
 
-  const table = document.createElement('table');
-  const pre = document.createElement('pre');
-  pre.textContent = txt;
-  table.appendChild(pre);
-  document.body.appendChild(table);
+  if(!js) {
+    let win = window.open('', 'angela he', 'width=500,height=600,' + 'left=' + (window.screenX + (window.outerWidth - 500) / 2) + ',top=' + (window.screenY + (window.outerHeight - 740) / 2));
+    win.document.write('&lt;html&gt;&lt;table&gt;&lt;pre&gt;'+txt+'&lt;/pre&gt;&lt;/table&gt;&lt;/html&gt;\n');
+  }
+  else {
+    const table = document.createElement('table');
+    const pre = document.createElement('pre');
+    pre.textContent = txt;
+    table.appendChild(pre);
+    document.body.appendChild(table);
+  }
 })();
