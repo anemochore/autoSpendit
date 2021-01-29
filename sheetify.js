@@ -22,7 +22,10 @@
 
   if(!js) {
     let win = window.open('', 'angela he', 'width=500,height=600,' + 'left=' + (window.screenX + (window.outerWidth - 500) / 2) + ',top=' + (window.screenY + (window.outerHeight - 740) / 2));
-    win.document.write('&lt;html&gt;&lt;table&gt;&lt;pre&gt;'+txt+'&lt;/pre&gt;&lt;/table&gt;&lt;/html&gt;\n');
+    txt = '<html><table><pre>'+txt+'</pre></table></html>';
+    win.document.documentElement.textContent = txt;
+    console.log(txt);
+    win.document.close();
   }
   else {
     const table = document.createElement('table');
