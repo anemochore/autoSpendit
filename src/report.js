@@ -24,11 +24,23 @@
   //생성
   await clickAndWait_(el, 'div#report-document');
   await clickAndWait_(null, 'div#alarm-pop.disabled');  //알림 사라질 때까지 기다려야.
+  await sleep(300);  //-_-...
 
   //제목
   elBase = document.querySelector('div#report-document header');
   await cInput_(null, v.title, 'h3', 'input', elBase);
 
+  //세금계산서일 때는 보고서 타입 변경
+  if(v.tax.startsWith('세금계산서')) {
+    elBase = getRightDivs_('보고서 타입')
+    await clickAndWait_(elBase.querySelector('button'), 'button', elBase);
+    el = [...elBase.querySelectorAll('div>div+button+div>div')].filter(el => el.innerText == '세금계산서')[0];
+    el = await clickAndWait_(el, 'div.swal2-popup button.swal2-confirm');  //'변경' 기다림
+    await clickAndWait_(el, 'div#report-document');
+    await clickAndWait_(null, 'div#alarm-pop.disabled');  //알림 사라질 때까지 기다려야.
+    await sleep(300);  //-_-...
+  }
+  
   //지급처(이름)...실지급금액
   await cInput_('지급처(이름)', v.sangho);
   await cInput_('주민등록번호', v.regNo);
@@ -94,7 +106,7 @@
   el = await clickAndWait_(el, 'div#report-view>div>ul>li>button');  //'제출' 버튼 기다림
 
   //제출
-  alert('수동으로 pdf 파일을 첨부하고 제출합니다.');
+  alert('완료. 세금계산서는 지출 카테고리와 예산항목을 수정해야 하고, 정기지출은 수동으로 pdf 파일을 첨부해야 함)');
   document.querySelector('div.add-file-field').scrollIntoView();
 
   //el = await clickAndWait_(el, 'div.spendit-modal-container>div>footer button');
@@ -133,7 +145,7 @@
       if(!selector) {
         observer = new MutationObserver(m => {
           observer.disconnect();
-          //console.log(elToWaitOrSelector, 'resolved');
+          console.log(elToWaitOrSelector, 'resolved (selector not presented)');
           resolve(elToWaitOrSelector);
         });
       }
@@ -142,14 +154,14 @@
           let els = [...selectOn.querySelectorAll(selector)];
           if(els.length > 0) {
             observer.disconnect();
-            //console.log(els[els.length-1], 'resolved');
+            console.log(els[els.length-1], 'resolved');
             resolve(els[els.length-1]);
           }
         });
       }
       observer.observe(elToWaitOrSelector, {childList: true, subtree: true, attributes: true, characterData: true});
       if(elToClick) elToClick.click();
-      //console.log(elToClick, 'clicked');
+      console.log(elToClick, 'clicked');
     });
   }
 
