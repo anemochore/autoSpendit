@@ -28,6 +28,6 @@
 - 그래서 대충대충 미니파이 대신 빈 행만 없애고 html 붙이고 < > 이스케이프하는 코드를 짠 게 [이거](https://runkit.com/anemochore/sheetify). js=파일명 이런 식으로 매개변수를 '대충' 받는다. 
 - 근데... 이 엔드포인트가 작동을 했다 안 했다 한다. 한 열 번 중 한 번은 에러가 남. 그래서인지 구글 시트에서 importXml도 안 된다. 
 - 아... 매우 귀찮다. 
-- 2021-2-19 그래서 [이 글](https://anidiots.guide/hosting/repl)을 참고해서 repl.it에 호스팅하기로 했다. 어차피 노드를 쓰는 거니 미니파이도 uglify-js를 쓰기로 함. 결과물은 [이거](https://repl.it/@anemochore/sheetify). importXml도 importHtml로 바꿔서 일단은 잘 작동되는 걸 확인했다. 이제 좀 유지보수가 쉬워지겠네 휴.
+- 2021-2-19 그래서 [이 글](https://anidiots.guide/hosting/repl)을 참고해서 repl.it에 호스팅하기로 했다. ~~어차피 노드를 쓰는 거니 미니파이도 uglify-js를 쓰기로 함.~~ 내 코드가 후져서인지 미니파이하면 실행이 안 되서 미니파이는 패스. 결과물은 [이거](https://repl.it/@anemochore/sheetify). importXml도 importHtml로 바꿔서 일단은 잘 작동되는 걸 확인했다. 이제 좀 유지보수가 쉬워지겠네 휴.
 
 
