@@ -61,7 +61,7 @@
   }
 
   let monthOffset = 0;
-  if(yearDiff == 1) monthOffset = 12
+  if(yearDiff == 1) monthOffset = 12;
 
   let monthCount = thisMonth + monthOffset - v.month;
   for(let i=0; i<monthCount; i++)
